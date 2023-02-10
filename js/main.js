@@ -1,59 +1,91 @@
-//Declaración de variables necesarias
-let nota = 0;
-let sumaDeNotas = 0;
-let contador = 0;
-let resultado = 0;
-let acumulador = 0;
-//Funcion que solicita nuevamente el nombre
-function reSolicitarNombre(){
-    nombreIngresado = prompt("Ingrese el nombre del siguiente alumno. Para finalizar la carga de datos, ingrese SALIR");
-}
-//Funcion que suma las notas
-function sumarNotas(valor){
-    sumaDeNotas+=valor;
-}
-//Funcion que calcula el promedio
-function promedio(suma,cantidad){
-    resultado = suma / cantidad;
-}
+//Estado inicial del array de objetos
+const baseDeDatos = [];
 
+//Declaracion de variables necesarias
+let count = 0;
+let categoria = "";
+let valor = "";
+const listaDeCategorias = [];
+const listaDeValores = [];
+let confirmacion=true;
+let nombreDelProducto="";
 
-let nombreIngresado = prompt("Ingrese el nombre del alumno. Para finalizar la carga de datos, ingrese SALIR");
-
-while(nombreIngresado !== "SALIR"){
-    nota = parseInt(prompt("Ingrese la primer nota"));
-
-    while(nota < 1 || nota > 10){
-        alert("La nota no puede ser más de 10 o menos de 1, intente nuevamente.");
-        nota = parseInt(prompt("Ingrese la primer nota"));
+//Funcion de carga de propiedades
+function cargarPropiedades() {
+    while(categoria != null) {
+        listaDeCategorias.push(categoria);
+        console.log(listaDeCategorias);
+        categoria = prompt('Ingrese otra categoria (Para continuar, pulse Cancelar):');
+        if(categoria!==null){
+            categoria.toLowerCase();
+        }
     }
-    sumarNotas(nota);
-    nota = parseInt(prompt("Ingrese la segunda nota"));
-
-    while(nota < 1 || nota > 10){
-        alert("La nota no puede ser más de 10 o menos de 1, intente nuevamente.");
-        nota = parseInt(prompt("Ingrese la segunda nota"));
+}
+//Funcion de carga de valores
+function cargarValores() {
+    for (let i=0;i<listaDeCategorias.length;i++) {
+        valor = prompt('Ingrese un valor para la categoria '+listaDeCategorias[i]+':').toLowerCase();
+        if(!isNaN(valor)) {
+            parseInt(valor);
+        }
+        listaDeValores.push(valor);
+        console.log(listaDeValores);
     }
-    sumarNotas(nota);
-    nota = parseInt(prompt("Ingrese la tercer nota"));
-
-    while(nota < 1 || nota > 10){
-        alert("La nota no puede ser más de 10 o menos de 1, intente nuevamente.");
-        nota = parseInt(prompt("Ingrese la tercera nota"));
-    }
-    sumarNotas(nota);
-
-    promedio (sumaDeNotas,3);
-    alert("La nota final de "+nombreIngresado+" es "+resultado.toPrecision(3)+".");
-
-    contador=contador+1;
-    acumulador+=resultado;
-    sumaDeNotas=0;
-    reSolicitarNombre();
 }
 
-promedio(acumulador,contador);
+//Armado de la funcion constructora
+class Producto {
+    constructor(lista1, lista2) {
+        this.id = count;
+        for (let i = 0; i < lista1.length; i++) {
+            this[lista1[i]] = lista2[i];
+        }
+    }
+}
 
-alert("La cantidad final de alumnos ingresados fue "+contador+". El promedio general de los alumnos fue de "+resultado.toPrecision(3)+".")
+//Función para quitar objetos del Array de Objetos
+function quitarProducto(nombreDelProducto) {
+    let index=baseDeDatos.indexOf(baseDeDatos.find((el)=>el[listaDeCategorias[0]]===nombreDelProducto));
+    if (index!=-1) {
+        baseDeDatos.splice(index,1);
+    }
+    console.log(baseDeDatos);
+}
 
-alert("Gracias por utilizar nuestros servicios. Vuelva pronto!");
+
+alert('Bienvenido al sistema de bases de datos Culture, donde armamos su base de datos a su gusto.')
+categoria = prompt('Por favor, ingrese una categoria para su producto:').toLowerCase();
+
+cargarPropiedades();
+
+while(confirmacion){
+    cargarValores();
+    const producto = new Producto(listaDeCategorias,listaDeValores);
+    baseDeDatos.push(producto);
+    console.log(baseDeDatos);
+    
+    listaDeValores.length = 0;
+
+    if(prompt("Quiere seguir agregando productos a la base de datos? (SI/NO)").toUpperCase()=="SI"){
+        confirmacion=true; 
+        count++;
+    }else{
+        while(confirmacion){
+            switch(prompt('Que desea hacer a continuación? (CARGAR mas productos, QUITAR productos, SALIR)').toLowerCase()){
+                case "cargar":
+                    cargarValores();
+                    const producto = new Producto(listaDeCategorias,listaDeValores);
+                    baseDeDatos.push(producto);
+                    console.log(baseDeDatos);
+                    break;
+                case "quitar":
+                    quitarProducto(nombreDelProducto = prompt("Escriba el nombre del producto a eliminar:").toLowerCase());
+                    break;
+                case "salir":
+                    confirmacion=false; 
+                    alert('Muchas gracias por utilizar nuestros servicios.')
+                    break;
+            }
+        }
+    }
+}
