@@ -2,13 +2,14 @@
 const baseDeDatos = [];
 
 //Declaracion de variables necesarias
-let count = 0;
 let categoria = "";
 let valor = "";
-const listaDeCategorias = [];
-const listaDeValores = [];
+let count = 0;
 let confirmacion=true;
 let nombreDelProducto="";
+const listaDeCategorias = [];
+const listaDeValores = [];
+
 
 //Funcion de carga de propiedades
 function cargarPropiedades() {
@@ -52,40 +53,44 @@ function quitarProducto(nombreDelProducto) {
     console.log(baseDeDatos);
 }
 
-
+//Inicio del programa
 alert('Bienvenido al sistema de bases de datos Culture, donde armamos su base de datos a su gusto.')
 categoria = prompt('Por favor, ingrese una categoria para su producto:').toLowerCase();
 
+//Carga de propiedades para los objetos (no se pueden editar)
 cargarPropiedades();
 
-while(confirmacion){
-    cargarValores();
-    const producto = new Producto(listaDeCategorias,listaDeValores);
-    baseDeDatos.push(producto);
-    console.log(baseDeDatos);
-    
-    listaDeValores.length = 0;
+//Carga inicial de valores para cada una de las propiedades elegidas
+cargarValores();
+const producto = new Producto(listaDeCategorias,listaDeValores);
+baseDeDatos.push(producto);
+console.log(baseDeDatos);
 
-    if(prompt("Quiere seguir agregando productos a la base de datos? (SI/NO)").toUpperCase()=="SI"){
-        confirmacion=true; 
-        count++;
-    }else{
-        while(confirmacion){
-            switch(prompt('Que desea hacer a continuación? (CARGAR mas productos, QUITAR productos, SALIR)').toLowerCase()){
-                case "cargar":
-                    cargarValores();
-                    const producto = new Producto(listaDeCategorias,listaDeValores);
-                    baseDeDatos.push(producto);
-                    console.log(baseDeDatos);
-                    break;
-                case "quitar":
-                    quitarProducto(nombreDelProducto = prompt("Escriba el nombre del producto a eliminar:").toLowerCase());
-                    break;
-                case "salir":
-                    confirmacion=false; 
-                    alert('Muchas gracias por utilizar nuestros servicios.')
-                    break;
-            }
-        }
+//Reset de valores una vez generado el objeto
+listaDeValores.length = 0;
+//Actualización del contador
+count++;
+
+//Interacción
+while(confirmacion){
+    switch(prompt('Que desea hacer a continuación? (CARGAR mas productos, QUITAR productos, SALIR)').toLowerCase()){
+        case "cargar":
+            //Nueva carga de valores con reset y actualización del contador
+            cargarValores();
+            const producto = new Producto(listaDeCategorias,listaDeValores);
+            baseDeDatos.push(producto);
+            console.log(baseDeDatos);
+            listaDeValores.length = 0;
+            count++;
+            break;
+        case "quitar":
+            //Eliminación de un objeto en la base de datos
+            quitarProducto(nombreDelProducto = prompt("Escriba el nombre del producto a eliminar:").toLowerCase());
+            break;
+        case "salir":
+            //Salida del programa
+            confirmacion=false; 
+            alert('Muchas gracias por utilizar nuestros servicios.')
+            break;
     }
 }
