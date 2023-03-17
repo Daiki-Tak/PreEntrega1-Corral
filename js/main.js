@@ -42,38 +42,62 @@ function eliminarDelCarrito(producto) {
     if (carrito[index].cantidad > 1) {
         carrito[index].quitar();
     } else {
-        carrito.splice(index, 1);
+        if(carrito.length === 1){
+            vaciarCarrito();
+        }
+        else{
+            carrito.splice(index, 1);
+        }
     }
-
+    
     localStorage.setItem('carritoEnStorage', JSON.stringify(carrito));
     actualizarCarrito();
 }
 
 //Funcion que crear las cards de productos en HTML mediante JS.
-function crearCardProductosHTML(array) {
+function crearCardProductosHTML() {
     let contenedor = document.getElementById('main-container_id');
     contenedor.innerHTML = '';
-
-    for (const producto of array) {
-        let card = document.createElement('div');
-        card.innerHTML = `       
-            <div class="card" style="width: 18rem;">
-                <img class="card-img-top imagen-kiosco" src=${producto.img} alt="Card image cap" />
-                <div class="card-body">
-                    <h3 class="card-title">${producto.nombre}</h3>
-                    <h5 class="card-title">${producto.tipo}</h5>
-                    <p class="card-text">$${producto.precio}</p>
-                    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
-                        <button id="agregar${producto.tipo}${producto.id}" type="button" class="btn btn-dark"> Agregar </button>
-                    </div>
-                </div>
-            </div>`;
-        contenedor.appendChild(card);
-        let boton = document.getElementById(
-        `agregar${producto.tipo}${producto.id}`
-        );
-        boton.addEventListener('click', () => agregarAlCarrito(producto));
-    }
+    fetch('./js/data.json')
+        .then((res)=>res.json())
+        .then((data)=>{
+            data.forEach((producto)=>{
+                let card = document.createElement('div');
+                card.innerHTML = `       
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top imagen-kiosco" src=${producto.img} alt="Card image cap" />
+                        <div class="card-body">
+                            <h3 class="card-title">${producto.nombre}</h3>
+                            <h5 class="card-title">${producto.tipo}</h5>
+                            <p class="card-text">$${producto.precio}</p>
+                            <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                <button id="agregar${producto.tipo}${producto.id}" type="button" class="btn btn-dark"> Agregar </button>
+                            </div>
+                        </div>
+                    </div>`;
+                contenedor.appendChild(card);
+                let boton = document.getElementById(
+                `agregar${producto.tipo}${producto.id}`
+                );
+                boton.addEventListener('click', () => agregarAlCarrito(producto));
+                boton.addEventListener('click', () => {
+                    Toastify({
+                        text: "Has agregado el producto al carrito.",
+                        duration: 1500,
+                        gravity: "bottom",
+                        position: "right",
+                        stopOnFocus: true,
+                        style: {
+                            width: "300px",
+                            height: "auto",
+                            fontSize: "24px",
+                            fontStyle: "italic",
+                            background: "#BAB4B4",
+                        }
+                    }).showToast();
+                })
+            })
+        })
 }
 
 //Funcion que actualiza la lista del carrito.
@@ -81,14 +105,16 @@ function actualizarCarrito() {
     let contenedor = document.getElementById('carrito-container');
 
     if (carrito.length === 0) {
-        contenedor.innerHTML = '';
+        contenedor.innerHTML = '<h3 class="dropdown-header">Agregue productos a su carrito.</h3>';
         return;
     }
 
     contenedor.innerHTML = `
+        <li>
             <table id="tabla-carrito" class="table table-striped">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Nombre</th>
                         <th>Cantidad</th>
                         <th>Precio</th>
@@ -100,33 +126,83 @@ function actualizarCarrito() {
 
                     </tbody>
                 </thead>
-            </table>`;
+            </table>
+        </li>`;
 
     let bodyTabla = document.getElementById('bodyTabla');
     for (const kiosco of carrito) {
         let datos = document.createElement('tr');
         datos.innerHTML = `
+            <td><img src=${kiosco.img} alt="Card image cap" width="100px" height="100px"/></td>
             <td>${kiosco.nombre}</td>
             <td>${kiosco.cantidad}</td>
             <td>${kiosco.precio}</td>
             <td>${kiosco.precio * kiosco.cantidad}</td>
-            <td><button id="eliminar${
-            kiosco.id
-            }" class="btn btn-red">Eliminar</button></td>
+            <td><button id="eliminar${kiosco.id}" class="btn btn-red">Eliminar</button></td>
             `;
 
         bodyTabla.appendChild(datos);
 
         let boton = document.getElementById(`eliminar${kiosco.id}`);
         boton.addEventListener('click', () => eliminarDelCarrito(kiosco));
+        boton.addEventListener('click', () => {
+            Toastify({
+                text: "Has eliminado el producto del carrito.",
+                duration: 1500,
+                gravity: "bottom", // `top` or `bottom`
+                position: "left", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                style: {
+                    width: "300px",
+                    height: "auto",
+                    fontSize: "24px",
+                    fontStyle: "italic",
+                    background: "#454B4B",
+                }
+            }).showToast();
+        })
     }
 
     let precioTotal = obtenerPrecioTotal(carrito);
     let accionesCarrito = document.getElementById('acciones-id');
     accionesCarrito.innerHTML = `
-            <h5>PrecioTotal: $${precioTotal}</h5></br>
-            <button id="vaciarCarrito" onclick="vaciarCarrito()" class="btn btn-dark">Vaciar Carrito</button>`;
-    }
+            <h6>Precio Final: $${precioTotal}</h6></br>
+            <button id="vaciarCarrito" class="btn btn-dark">Vaciar Carrito</button>`;
+    let boton = document.getElementById(`vaciarCarrito`);
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: true
+    })
+    boton.addEventListener('click', () => {
+        swalWithBootstrapButtons.fire({
+            title: 'Estás seguro de que querés vaciar el carrito?',
+            text: "No hay vuelta atrás!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, vacíalo!',
+            cancelButtonText: 'No, cancélalo!',
+            reverseButtons: false
+        }).then((result) => {
+            if(result.isConfirmed){
+                swalWithBootstrapButtons.fire(
+                    'Vaciado!',
+                    'Tu carrito ahora está vacío.',
+                    'success',
+                    vaciarCarrito()
+                )
+            }else if (result.dismiss === Swal.DismissReason.cancel){
+                swalWithBootstrapButtons.fire(
+                    'Cancelado',
+                    'Tu carrito está intacto.',
+                    'error'
+                )
+            }
+        })
+    })
+}
 
 
 //Funcion que calcula el total del valor tomado en la variables precio.
@@ -140,7 +216,7 @@ function obtenerPrecioTotal(array) {
 function vaciarCarrito() {
   carrito = [];
   localStorage.removeItem('carritoEnStorage');
-  document.getElementById('carrito-container').innerHTML = '';
+  document.getElementById('carrito-container').innerHTML = '<h3 class="dropdown-header">Agregue productos a su carrito.</h3>';
   document.getElementById('acciones-id').innerHTML = '';
 }
 
@@ -157,29 +233,8 @@ function chequearCarritoEnStorage() {
   return array;
 }
 
-//Carrito de productos
-const listaKiosco = [
-    { id: 1, nombre: "Flow Cereal", precio: 50, tipo: "barrita de cereal", img:"./media/flowcereal.jpg"},
-    { id: 2, nombre: "Quaker", precio: 110, tipo: "barrita de cereal", img:"./media/quaker.jpg" },
-    { id: 3, nombre: "Cereal MIX", precio: 60, tipo: "barrita de cereal", img:"./media/cerealmix.jpg"},
-    { id: 4, nombre: "Cereal FORT", precio: 30, tipo: "barrita de cereal", img:"./media/cerealfort.jpg"},
-    { id: 5, nombre: "MÜECAS", precio: 135, tipo: "barrita de cereal", img:"./media/muecas.jpg"},
-    { id: 6, nombre: "Tofi", precio: 85, tipo: "alfajor", img:"./media/tofi.jpg"},
-    { id: 7, nombre: "Tatin", precio: 193, tipo: "alfajor", img:"./media/tatin.jpg"},
-    { id: 8, nombre: "bon o bon", precio: 558, tipo: "alfajor", img:"./media/bonobon.jpg"},
-    { id: 9, nombre: "B&N", precio: 73, tipo: "alfajor", img:"./media/byn.jpg"},
-    { id: 10, nombre: "Cachafaz", precio: 193, tipo: "alfajor", img:"./media/cachafaz.jpg"},
-    { id: 11, nombre: "OREO", precio: 228, tipo: "alfajor", img:"./media/oreo.jpg"},
-    { id: 12, nombre: "Aguila", precio: 200, tipo: "alfajor", img:"./media/aguila.jpg"},
-    { id: 13, nombre: "Guaymallen", precio: 110, tipo: "alfajor", img:"./media/guaymallen.jpg"},
-    { id: 14, nombre: "tri SHOT", precio: 200, tipo: "alfajor", img:"./media/trishot.jpg"},
-    { id: 15, nombre: "Terrabusi", precio: 107, tipo: "alfajor", img:"./media/terrabusi.jpg"},
-    { id: 16, nombre: "Milka", precio: 286, tipo: "alfajor", img:"./media/milka.jpg"},
-];
-
-//Ejecuto la funcion que crear los cards y la que chequea el storage.
 document.addEventListener('DOMContentLoaded', function () {
-  crearCardProductosHTML(listaKiosco);
+  crearCardProductosHTML();
   carrito = chequearCarritoEnStorage();
   actualizarCarrito();
 });

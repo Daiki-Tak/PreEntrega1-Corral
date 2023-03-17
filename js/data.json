@@ -1,0 +1,18 @@
+[
+    { "id": 1, "nombre": "Flow Cereal", "precio": 50, "tipo": "barrita de cereal", "img":"./media/flowcereal.jpg"},
+    { "id": 2, "nombre": "Quaker", "precio": 110, "tipo": "barrita de cereal", "img":"./media/quaker.jpg" },
+    { "id": 3, "nombre": "Cereal MIX", "precio": 60, "tipo": "barrita de cereal", "img":"./media/cerealmix.jpg"},
+    { "id": 4, "nombre": "Cereal FORT", "precio": 30, "tipo": "barrita de cereal", "img":"./media/cerealfort.jpg"},
+    { "id": 5, "nombre": "MÜECAS", "precio": 135, "tipo": "barrita de cereal", "img":"./media/muecas.jpg"},
+    { "id": 6, "nombre": "Tofi", "precio": 85, "tipo": "alfajor", "img":"./media/tofi.jpg"},
+    { "id": 7, "nombre": "Tatin", "precio": 193, "tipo": "alfajor", "img":"./media/tatin.jpg"},
+    { "id": 8, "nombre": "bon o bon", "precio": 558, "tipo": "alfajor", "img":"./media/bonobon.jpg"},
+    { "id": 9, "nombre": "B&N", "precio": 73, "tipo": "alfajor", "img":"./media/byn.jpg"},
+    { "id": 10, "nombre": "Cachafaz", "precio": 193, "tipo": "alfajor", "img":"./media/cachafaz.jpg"},
+    { "id": 11, "nombre": "OREO", "precio": 228, "tipo": "alfajor", "img":"./media/oreo.jpg"},
+    { "id": 12, "nombre": "Aguila", "precio": 200, "tipo": "alfajor", "img":"./media/aguila.jpg"},
+    { "id": 13, "nombre": "Guaymallen", "precio": 110, "tipo": "alfajor", "img":"./media/guaymallen.jpg"},
+    { "id": 14, "nombre": "tri SHOT", "precio": 200, "tipo": "alfajor", "img":"./media/trishot.jpg"},
+    { "id": 15, "nombre": "Terrabusi", "precio": 107, "tipo": "alfajor", "img":"./media/terrabusi.jpg"},
+    { "id": 16, "nombre": "Milka", "precio": 286, "tipo": "alfajor", "img":"./media/milka.jpg"}
+]
